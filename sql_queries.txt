@@ -1,0 +1,816 @@
+-- CREATE TABLE IF NOT EXISTS dl_locations (
+--     bounds_min_long DOUBLE,
+--     bounds_min_lat DOUBLE,
+--     bounds_max_long DOUBLE,
+--     bounds_max_lat DOUBLE,
+--     latitude DOUBLE,
+--     longitude DOUBLE,
+--     country_code TEXT,
+--     country_id INTEGER,
+--     country_name TEXT,
+--     datetime_first TEXT,
+--     datetime_first_local TIMESTAMP,
+--     datetime_first_utc TIMESTAMP,
+--     datetime_last TEXT,
+--     datetime_last_local TIMESTAMP,
+--     datetime_last_utc TIMESTAMP,
+--     distance DOUBLE,
+--     location_id BIGINT,
+--     instrument_0_id INTEGER,
+--     instrument_0_name TEXT,
+--     instrument_1_id INTEGER,
+--     instrument_1_name TEXT,
+--     is_mobile BOOLEAN,
+--     is_monitor BOOLEAN,
+--     licenses TEXT,
+--     license_attr_name TEXT,
+--     license_attr_url TEXT,
+--     license_date_from DATE,
+--     license_date_to DATE,
+--     license_id INTEGER,
+--     license_name TEXT,
+--     locality TEXT,
+--     location_name TEXT,
+--     owner_id INTEGER,
+--     owner_name TEXT,
+--     provider_id INTEGER,
+--     provider_name TEXT,
+--     sensor_0_id BIGINT,
+--     sensor_0_name TEXT,
+--     sensor_0_display_name TEXT,
+--     sensor_0_param_id INTEGER,
+--     sensor_0_param_name TEXT,
+--     sensor_0_param_units TEXT,
+--     sensor_1_id BIGINT,
+--     sensor_1_name TEXT,
+--     sensor_1_display_name TEXT,
+--     sensor_1_param_id INTEGER,
+--     sensor_1_param_name TEXT,
+--     sensor_1_param_units TEXT,
+--     sensor_2_id BIGINT,
+--     sensor_2_name TEXT,
+--     sensor_2_display_name TEXT,
+--     sensor_2_param_id INTEGER,
+--     sensor_2_param_name TEXT,
+--     sensor_2_param_units TEXT,
+--     sensor_3_id BIGINT,
+--     sensor_3_name TEXT,
+--     sensor_3_display_name TEXT,
+--     sensor_3_param_id INTEGER,
+--     sensor_3_param_name TEXT,
+--     sensor_3_param_units TEXT,
+--     sensor_4_id BIGINT,
+--     sensor_4_name TEXT,
+--     sensor_4_display_name TEXT,
+--     sensor_4_param_id INTEGER,
+--     sensor_4_param_name TEXT,
+--     sensor_4_param_units TEXT,
+--     sensor_5_id BIGINT,
+--     sensor_5_name TEXT,
+--     sensor_5_display_name TEXT,
+--     sensor_5_param_id INTEGER,
+--     sensor_5_param_name TEXT,
+--     sensor_5_param_units TEXT,
+--     sensor_6_id BIGINT,
+--     sensor_6_name TEXT,
+--     sensor_6_display_name TEXT,
+--     sensor_6_param_id INTEGER,
+--     sensor_6_param_name TEXT,
+--     sensor_6_param_units TEXT,
+--     sensor_7_id BIGINT,
+--     sensor_7_name TEXT,
+--     sensor_7_display_name TEXT,
+--     sensor_7_param_id INTEGER,
+--     sensor_7_param_name TEXT,
+--     sensor_7_param_units TEXT,
+--     timezone TEXT,
+--     ingestion_date DATE DEFAULT CURRENT_DATE,
+--     ingestion_time TIME DEFAULT CURRENT_TIME,
+--     run_id BIGINT 
+-- );
+
+-- WITH next_run AS (
+--     SELECT COALESCE(MAX(run_id), 0) + 1 AS run_id FROM dl_locations
+-- )
+-- INSERT INTO dl_locations
+-- SELECT
+--     next_run.run_id AS run_id,
+--     s.*
+-- FROM
+--     src_locations s,
+--     next_run;
+
+show tables;
+
+-- CREATE OR REPLACE TABLE src_locations (
+--     bounds_min_long DOUBLE,
+--     bounds_min_lat DOUBLE,
+--     bounds_max_long DOUBLE,
+--     bounds_max_lat DOUBLE,
+--     latitude DOUBLE,
+--     longitude DOUBLE,
+--     country_code TEXT,
+--     country_id INTEGER,
+--     country_name TEXT,
+--     datetime_first TEXT,  -- Original string, keep if needed
+--     datetime_first_local TIMESTAMP,
+--     datetime_first_utc TIMESTAMP,
+--     datetime_last TEXT,  -- Original string, keep if needed
+--     datetime_last_local TIMESTAMP,
+--     datetime_last_utc TIMESTAMP,
+--     distance DOUBLE,
+--     location_id BIGINT,
+--     instrument_0_id INTEGER,
+--     instrument_0_name TEXT,
+--     instrument_1_id INTEGER,
+--     instrument_1_name TEXT,
+--     is_mobile BOOLEAN,
+--     is_monitor BOOLEAN,
+--     licenses TEXT,  -- Can be JSON/text; normalize later
+--     license_attr_name TEXT,
+--     license_attr_url TEXT,
+--     license_date_from DATE,
+--     license_date_to DATE,
+--     license_id INTEGER,
+--     license_name TEXT,
+--     locality TEXT,
+--     location_name TEXT,
+--     owner_id INTEGER,
+--     owner_name TEXT,
+--     provider_id INTEGER,
+--     provider_name TEXT,
+--     sensor_0_id BIGINT,
+--     sensor_0_name TEXT,
+--     sensor_0_display_name TEXT,
+--     sensor_0_param_id INTEGER,
+--     sensor_0_param_name TEXT,
+--     sensor_0_param_units TEXT,
+--     sensor_1_id BIGINT,
+--     sensor_1_name TEXT,
+--     sensor_1_display_name TEXT,
+--     sensor_1_param_id INTEGER,
+--     sensor_1_param_name TEXT,
+--     sensor_1_param_units TEXT,
+--     sensor_2_id BIGINT,
+--     sensor_2_name TEXT,
+--     sensor_2_display_name TEXT,
+--     sensor_2_param_id INTEGER,
+--     sensor_2_param_name TEXT,
+--     sensor_2_param_units TEXT,
+--     sensor_3_id BIGINT,
+--     sensor_3_name TEXT,
+--     sensor_3_display_name TEXT,
+--     sensor_3_param_id INTEGER,
+--     sensor_3_param_name TEXT,
+--     sensor_3_param_units TEXT,
+--     sensor_4_id BIGINT,
+--     sensor_4_name TEXT,
+--     sensor_4_display_name TEXT,
+--     sensor_4_param_id INTEGER,
+--     sensor_4_param_name TEXT,
+--     sensor_4_param_units TEXT,
+--     sensor_5_id BIGINT,
+--     sensor_5_name TEXT,
+--     sensor_5_display_name TEXT,
+--     sensor_5_param_id INTEGER,
+--     sensor_5_param_name TEXT,
+--     sensor_5_param_units TEXT,
+--     sensor_6_id BIGINT,
+--     sensor_6_name TEXT,
+--     sensor_6_display_name TEXT,
+--     sensor_6_param_id INTEGER,
+--     sensor_6_param_name TEXT,
+--     sensor_6_param_units TEXT,
+--     sensor_7_id BIGINT,
+--     sensor_7_name TEXT,
+--     sensor_7_display_name TEXT,
+--     sensor_7_param_id INTEGER,
+--     sensor_7_param_name TEXT,
+--     sensor_7_param_units TEXT,
+--     timezone TEXT
+-- );
+
+-- PRAGMA table_info('dl_locations');
+
+
+
+-- WITH last_run AS (
+--     SELECT COALESCE(MAX(run_id), 0) AS max_run_id FROM dl_locations
+-- ),
+-- numbered_rows AS (
+--     SELECT
+--         s.*,
+--         current_date() AS ingestion_date,
+--         current_localtime() AS ingestion_time,
+--         ROW_NUMBER() OVER () + last_run.max_run_id AS run_id
+--     FROM
+--         src_locations s,
+--         last_run
+-- )
+-- INSERT INTO dl_locations
+-- SELECT * FROM numbered_rows;
+
+-- truncate table dl_locations;
+
+CREATE OR REPLACE TABLE dm_locations (
+    location_id             BIGINT PRIMARY KEY,
+    location_name           TEXT,
+    country_name            TEXT,
+    latitude                DOUBLE,
+    longitude               DOUBLE,
+    timezone                TEXT,
+    start_date              DATE,
+    end_date                DATE,
+    monitoring_days         INTEGER,
+    is_mobile               BOOLEAN,
+    is_monitor              BOOLEAN,
+    owner_name              TEXT,
+    provider_name           TEXT,
+    license_name            TEXT,
+    sensor_types            TEXT,
+    sensor_count            INTEGER,
+    has_pm25_sensor         BOOLEAN,
+    has_temperature         BOOLEAN,
+    has_rh                  BOOLEAN,
+    has_pm1                 BOOLEAN,
+    has_pm03                BOOLEAN,
+    avg_pm25                DOUBLE,
+    max_pm25                DOUBLE,
+    days_above_pm25_35      INTEGER,
+    avg_temp                DOUBLE,
+    avg_humidity            DOUBLE,
+    last_pm25_value         DOUBLE,
+    run_id                  BIGINT,
+    ingestion_date          DATE,
+    ingestion_time          TIME,
+    updated_ingestion_date  DATE,
+    updated_ingestion_time  TIME,
+    source_system           TEXT
+);
+
+
+-- INSERT INTO dm_locations
+-- SELECT 
+--     location_id, 
+--     location_name,
+--     country_name,
+--     latitude, 
+--     longitude, 
+--     timezone, 
+--     start_date, 
+--     end_date, 
+--     monitoring_days, 
+--     is_mobile, 
+--     is_monitor, 
+--     owner_name,
+--     provider_name, 
+--     license_name,
+--     sensor_types, 
+--     sensor_count, 
+--     has_pm25_sensor, 
+--     has_temperature, 
+--     has_rh, 
+--     has_pm1, 
+--     has_pm03, 
+--     avg_pm25, 
+--     max_pm25, 
+--     days_above_pm25_35, 
+--     avg_temp, 
+--     avg_humidity, 
+--     last_pm25_value, 
+--     ROW_NUMBER() OVER () + last_run.max_run_id AS run_id, 
+--     ingestion_date, 
+--     ingestion_time, 
+--     updated_ingestion_date, 
+--     updated_ingestion_time,
+--     source_system
+-- FROM 
+-- (
+--     SELECT
+--         location_id,
+--         location_name,
+--         country_name,
+--         latitude,
+--         longitude,
+--         timezone,
+--         MIN(DATE(datetime_first)) AS start_date,
+--         MAX(DATE(datetime_last)) AS end_date,
+--         COUNT(DISTINCT DATE_TRUNC('day', CAST(datetime_first AS TIMESTAMP))) AS monitoring_days,
+--         BOOL_OR(is_mobile) AS is_mobile,
+--         BOOL_OR(is_monitor) AS is_monitor,
+--         owner_name,
+--         provider_name,
+--         license_name,
+--         STRING_AGG(DISTINCT sensor_0_name || ', ' || sensor_1_name || ', ' || sensor_2_name || ', ' || sensor_3_name || ', ' || sensor_7_name, ', ') AS sensor_types,
+--         COUNT(DISTINCT sensor_0_id) + COUNT(DISTINCT sensor_1_id) + COUNT(DISTINCT sensor_2_id) + COUNT(DISTINCT sensor_3_id) + COUNT(DISTINCT sensor_7_id) AS sensor_count,
+--         BOOL_OR('pm25' IN (sensor_0_name, sensor_1_name, sensor_2_name, sensor_3_name, sensor_7_name)) AS has_pm25_sensor,
+--         BOOL_OR(sensor_0_name = 'temperature' OR sensor_1_name = 'temperature' OR sensor_2_name = 'temperature' OR sensor_3_name = 'temperature' OR sensor_7_name = 'temperature') AS has_temperature,
+--         BOOL_OR(sensor_0_name = 'relativehumidity' OR sensor_1_name = 'relativehumidity' OR sensor_2_name = 'relativehumidity' OR sensor_3_name = 'relativehumidity' OR sensor_7_name = 'relativehumidity') AS has_rh,
+--         BOOL_OR(sensor_0_name = 'pm1' OR sensor_1_name = 'pm1' OR sensor_2_name = 'pm1' OR sensor_3_name = 'pm1' OR sensor_7_name = 'pm1') AS has_pm1,
+--         BOOL_OR(sensor_0_name = 'um003' OR sensor_1_name = 'um003' OR sensor_2_name = 'um003' OR sensor_3_name = 'um003' OR sensor_7_name = 'um003') AS has_pm03,
+--         COALESCE(AVG(CASE
+--             WHEN sensor_0_name = 'pm25' THEN sensor_0_value
+--             WHEN sensor_1_name = 'pm25' THEN sensor_1_value
+--             WHEN sensor_2_name = 'pm25' THEN sensor_2_value
+--             WHEN sensor_3_name = 'pm25' THEN sensor_3_value
+--             WHEN sensor_7_name = 'pm25' THEN sensor_7_value
+--         END), 0) AS avg_pm25,
+--         COALESCE(MAX(CASE
+--             WHEN sensor_0_name = 'pm25' THEN sensor_0_value
+--             WHEN sensor_1_name = 'pm25' THEN sensor_1_value
+--             WHEN sensor_2_name = 'pm25' THEN sensor_2_value
+--             WHEN sensor_3_name = 'pm25' THEN sensor_3_value
+--             WHEN sensor_7_name = 'pm25' THEN sensor_7_value
+--         END), 0) AS max_pm25,
+--         COUNT(DISTINCT CASE
+--             WHEN ('pm25' IN (sensor_0_name, sensor_1_name, sensor_2_name, sensor_3_name, sensor_7_name))
+--             AND ((sensor_0_name = 'pm25' AND sensor_0_value > 35)
+--                  OR (sensor_1_name = 'pm25' AND sensor_1_value > 35)
+--                  OR (sensor_2_name = 'pm25' AND sensor_2_value > 35)
+--                  OR (sensor_3_name = 'pm25' AND sensor_3_value > 35)
+--                  OR (sensor_7_name = 'pm25' AND sensor_7_value > 35))
+--             THEN DATE_TRUNC('day', datetime_first)
+--         END) AS days_above_pm25_35,
+--         COALESCE(AVG(CASE
+--             WHEN sensor_0_name = 'temperature' THEN sensor_0_value
+--             WHEN sensor_1_name = 'temperature' THEN sensor_1_value
+--             WHEN sensor_2_name = 'temperature' THEN sensor_2_value
+--             WHEN sensor_3_name = 'temperature' THEN sensor_3_value
+--             WHEN sensor_7_name = 'temperature' THEN sensor_7_value
+--         END), 0) AS avg_temp,
+--         COALESCE(AVG(CASE
+--             WHEN sensor_0_name = 'relativehumidity' THEN sensor_0_value
+--             WHEN sensor_1_name = 'relativehumidity' THEN sensor_1_value
+--             WHEN sensor_2_name = 'relativehumidity' THEN sensor_2_value
+--             WHEN sensor_3_name = 'relativehumidity' THEN sensor_3_value
+--             WHEN sensor_7_name = 'relativehumidity' THEN sensor_7_value
+--         END), 0) AS avg_humidity,
+--         MAX_BY(CASE
+--             WHEN sensor_0_name = 'pm25' THEN sensor_0_value
+--             WHEN sensor_1_name = 'pm25' THEN sensor_1_value
+--             WHEN sensor_2_name = 'pm25' THEN sensor_2_value
+--             WHEN sensor_3_name = 'pm25' THEN sensor_3_value
+--             WHEN sensor_7_name = 'pm25' THEN sensor_7_value
+--         END, datetime_last) AS last_pm25_value,
+--         (SELECT COALESCE(MAX(run_id), 0) FROM dm_locations) AS max_run_id,
+--         CURRENT_DATE AS ingestion_date,
+--         CURRENT_TIME AS ingestion_time,
+--         CURRENT_DATE AS updated_ingestion_date,
+--         CURRENT_TIME AS updated_ingestion_time,
+--         'air-quality' AS source_system
+--     FROM dl_locations
+--     GROUP BY
+--         location_id,
+--         location_name,
+--         country_name,
+--         latitude,
+--         longitude,
+--         timezone,
+--         owner_name,
+--         provider_name,
+--         license_name
+-- ) AS subquery,
+-- (SELECT COALESCE(MAX(run_id), 0) AS max_run_id FROM dm_locations) AS last_run;
+
+-- INSERT INTO dm_locations
+-- SELECT 
+--     location_id,
+--     location_name,
+--     country_name,
+--     latitude,
+--     longitude,
+--     timezone,
+--     MIN(DATE(datetime_first)) AS start_date,
+--     MAX(DATE(datetime_last)) AS end_date,
+--     COUNT(DISTINCT DATE_TRUNC('day', CAST(datetime_first AS TIMESTAMP))) AS monitoring_days,
+--     BOOL_OR(is_mobile) AS is_mobile,
+--     BOOL_OR(is_monitor) AS is_monitor,
+--     owner_name,
+--     provider_name,
+--     license_name,
+
+--     STRING_AGG(DISTINCT sensor_type, ', ') AS sensor_types,
+--     COUNT(DISTINCT sensor_id) AS sensor_count,
+
+--     BOOL_OR(sensor_type = 'pm25') AS has_pm25_sensor,
+--     BOOL_OR(sensor_type = 'temperature') AS has_temperature,
+--     BOOL_OR(sensor_type = 'relativehumidity') AS has_rh,
+--     BOOL_OR(sensor_type = 'pm1') AS has_pm1,
+--     BOOL_OR(sensor_type = 'um003') AS has_pm03,
+
+--     COALESCE(AVG(CASE WHEN sensor_type = 'pm25' THEN sensor_value END), 0) AS avg_pm25,
+--     COALESCE(MAX(CASE WHEN sensor_type = 'pm25' THEN sensor_value END), 0) AS max_pm25,
+
+--     COUNT(DISTINCT CASE 
+--         WHEN sensor_type = 'pm25' AND sensor_value > 35 
+--         THEN DATE_TRUNC('day', datetime_first) 
+--     END) AS days_above_pm25_35,
+
+--     COALESCE(AVG(CASE WHEN sensor_type = 'temperature' THEN sensor_value END), 0) AS avg_temp,
+--     COALESCE(AVG(CASE WHEN sensor_type = 'relativehumidity' THEN sensor_value END), 0) AS avg_humidity,
+
+--     MAX_BY(sensor_value, datetime_last) FILTER (WHERE sensor_type = 'pm25') AS last_pm25_value,
+
+--     (SELECT COALESCE(MAX(run_id), 0) FROM dm_locations) + 
+--     ROW_NUMBER() OVER (PARTITION BY location_id ORDER BY MAX(datetime_last)) AS run_id,
+
+--     CURRENT_DATE AS ingestion_date,
+--     CURRENT_TIME AS ingestion_time,
+--     CURRENT_DATE AS updated_ingestion_date,
+--     CURRENT_TIME AS updated_ingestion_time,
+--     'air-quality' AS source_system
+
+-- FROM dl_locations
+-- GROUP BY 
+--     location_id,
+--     location_name,
+--     country_name,
+--     latitude,
+--     longitude,
+--     timezone,
+--     owner_name,
+--     provider_name,
+--     license_name;
+
+
+finalll
+
+
+CREATE TABLE dm_locations_test AS
+SELECT 
+    location_id,
+    location_name,
+    country_name,
+    latitude,
+    longitude,
+    timezone,
+    MIN(DATE(datetime_first)) AS start_date,
+    MAX(DATE(datetime_last)) AS end_date,
+    -- COUNT(DISTINCT DATE_TRUNC('day', datetime_first)) AS monitoring_days,
+    COUNT(DISTINCT DATE_TRUNC('day', CAST(datetime_first AS TIMESTAMP))) AS monitoring_days,
+    BOOL_OR(is_mobile) AS is_mobile,
+    BOOL_OR(is_monitor) AS is_monitor,
+    owner_name,
+    provider_name,
+    license_name,
+
+    -- List all sensor types
+    STRING_AGG(DISTINCT sensor_0_name || ', ' || sensor_1_name || ', ' || sensor_2_name || ', ' ||
+                          sensor_3_name || ', ' || sensor_4_name || ', ' || sensor_5_name || ', ' ||
+                          sensor_6_name || ', ' || sensor_7_name, ', ') AS sensor_types,
+
+    -- Count all sensor IDs
+    COUNT(DISTINCT sensor_0_id) + COUNT(DISTINCT sensor_1_id) + COUNT(DISTINCT sensor_2_id) +
+    COUNT(DISTINCT sensor_3_id) + COUNT(DISTINCT sensor_4_id) + COUNT(DISTINCT sensor_5_id) +
+    COUNT(DISTINCT sensor_6_id) + COUNT(DISTINCT sensor_7_id) AS sensor_count,
+
+    -- Sensor availability flags
+    BOOL_OR(sensor_0_name = 'pm25' OR sensor_1_name = 'pm25' OR sensor_2_name = 'pm25' OR
+            sensor_3_name = 'pm25' OR sensor_4_name = 'pm25' OR sensor_5_name = 'pm25' OR
+            sensor_6_name = 'pm25' OR sensor_7_name = 'pm25') AS has_pm25_sensor,
+
+    BOOL_OR(sensor_0_name = 'temperature' OR sensor_1_name = 'temperature' OR sensor_2_name = 'temperature' OR
+            sensor_3_name = 'temperature' OR sensor_4_name = 'temperature' OR sensor_5_name = 'temperature' OR
+            sensor_6_name = 'temperature' OR sensor_7_name = 'temperature') AS has_temperature,
+
+    BOOL_OR(sensor_0_name = 'relativehumidity' OR sensor_1_name = 'relativehumidity' OR sensor_2_name = 'relativehumidity' OR
+            sensor_3_name = 'relativehumidity' OR sensor_4_name = 'relativehumidity' OR sensor_5_name = 'relativehumidity' OR
+            sensor_6_name = 'relativehumidity' OR sensor_7_name = 'relativehumidity') AS has_rh,
+
+    BOOL_OR(sensor_0_name = 'pm1' OR sensor_1_name = 'pm1' OR sensor_2_name = 'pm1' OR
+            sensor_3_name = 'pm1' OR sensor_4_name = 'pm1' OR sensor_5_name = 'pm1' OR
+            sensor_6_name = 'pm1' OR sensor_7_name = 'pm1') AS has_pm1,
+
+    BOOL_OR(sensor_0_name = 'um003' OR sensor_1_name = 'um003' OR sensor_2_name = 'um003' OR
+            sensor_3_name = 'um003' OR sensor_4_name = 'um003' OR sensor_5_name = 'um003' OR
+            sensor_6_name = 'um003' OR sensor_7_name = 'um003') AS has_pm03,
+
+    -- Run & ingestion metadata
+    ROW_NUMBER() OVER () + (SELECT COALESCE(MAX(run_id), 0) FROM dm_locations) AS run_id,
+    CURRENT_DATE AS ingestion_date,
+    CURRENT_TIME AS ingestion_time,
+    CURRENT_DATE AS updated_ingestion_date,
+    CURRENT_TIME AS updated_ingestion_time,
+    'air-quality' AS source_system
+
+FROM dl_locations
+GROUP BY
+    location_id,
+    location_name,
+    country_name,
+    latitude,
+    longitude,
+    timezone,
+    owner_name,
+    provider_name,
+    license_name;
+
+
+CREATE TABLE dm_location_metrics_test (
+    location_id BIGINT PRIMARY KEY,
+    avg_pm25 DOUBLE,
+    max_pm25 DOUBLE,
+    days_above_pm25_35 INTEGER,
+    avg_temp DOUBLE,
+    avg_humidity DOUBLE,
+    last_pm25_value DOUBLE,
+    air_quality_category TEXT,
+    sensor_count INTEGER,
+    has_pm25_sensor BOOLEAN,
+    has_temperature BOOLEAN,
+    has_rh BOOLEAN,
+    has_pm1 BOOLEAN,
+    has_pm03 BOOLEAN,
+    
+    -- Metadata
+    run_id BIGINT,
+    ingestion_date DATE,
+    ingestion_time TIME,
+    updated_ingestion_date DATE,
+    updated_ingestion_time TIME,
+    source_system TEXT
+);
+
+
+INSERT INTO dm_location_metrics
+SELECT
+    location_id,
+    avg_pm25,
+    max_pm25,
+    days_above_pm25_35,
+    avg_temp,
+    avg_humidity,
+    last_pm25_value,
+
+    -- AQI Category
+    CASE
+        WHEN avg_pm25 IS NULL THEN 'Unknown'
+        WHEN avg_pm25 <= 12 THEN 'Good'
+        WHEN avg_pm25 <= 35.4 THEN 'Moderate'
+        WHEN avg_pm25 <= 55.4 THEN 'Unhealthy for Sensitive Groups'
+        WHEN avg_pm25 <= 150.4 THEN 'Unhealthy'
+        ELSE 'Very Unhealthy'
+    END AS air_quality_category,
+
+    sensor_count,
+    has_pm25_sensor,
+    has_temperature,
+    has_rh,
+    has_pm1,
+    has_pm03,
+
+    -- Metadata
+    run_id,
+    ingestion_date,
+    ingestion_time,
+    updated_ingestion_date,
+    updated_ingestion_time,
+    source_system
+FROM dm_locations;
+
+
+-- INSERT INTO dm_location_metrics_test
+-- SELECT
+--     location_id,
+--     avg_pm25,
+--     max_pm25,
+--     days_above_pm25_35,
+--     avg_temp,
+--     avg_humidity,
+--     last_pm25_value,
+
+--     -- AQI Category
+--     CASE
+--         WHEN avg_pm25 IS NULL THEN 'Unknown'
+--         WHEN avg_pm25 <= 12 THEN 'Good'
+--         WHEN avg_pm25 <= 35.4 THEN 'Moderate'
+--         WHEN avg_pm25 <= 55.4 THEN 'Unhealthy for Sensitive Groups'
+--         WHEN avg_pm25 <= 150.4 THEN 'Unhealthy'
+--         ELSE 'Very Unhealthy'
+--     END AS air_quality_category,
+
+--     sensor_count,
+--     has_pm25_sensor,
+--     has_temperature,
+--     has_rh,
+--     has_pm1,
+--     has_pm03,
+--     run_id,
+--     current_date () as ingestion_date,
+--     current_localtime () as ingestion_time,
+--     current_date () as updated_ingestion_date,
+--       current_localtime () as  updated_ingestion_time,
+--     source_system
+-- FROM dm_locations;
+
+-- select distinct avg_pm25 from dm_location_metrics_test;
+select distinct sensor_3_name from src_locations limit 10;
+
+
+-- truncate table dm_location_metrics_test;
+
+newwwwww
+
+CREATE TABLE scr_locations (
+    bounds_min_long DOUBLE PRECISION,
+    bounds_min_lat DOUBLE PRECISION,
+    bounds_max_long DOUBLE PRECISION,
+    bounds_max_lat DOUBLE PRECISION,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    country_code TEXT,
+    country_id INT,
+    country_name TEXT,
+    datetime_first TIMESTAMP,
+    datetime_first_local TIMESTAMP,
+    datetime_first_utc TIMESTAMP,
+    datetime_last TIMESTAMP,
+    datetime_last_local TIMESTAMP,
+    datetime_last_utc TIMESTAMP,
+    distance DOUBLE PRECISION,
+    location_id BIGINT,
+    instrument_0_id INT,
+    instrument_0_name TEXT,
+    instrument_1_id INT,
+    instrument_1_name TEXT,
+    is_mobile BOOLEAN,
+    is_monitor BOOLEAN,
+    licenses TEXT, -- can store JSON or semicolon-separated string
+    license_attr_name TEXT,
+    license_attr_url TEXT,
+    license_date_from DATE,
+    license_date_to DATE,
+    license_id INT,
+    license_name TEXT,
+    locality TEXT,
+    location_name TEXT,
+    owner_id INT,
+    owner_name TEXT,
+    provider_id INT,
+    provider_name TEXT,
+
+    -- Sensors 0 to 7
+    sensor_0_id BIGINT,
+    sensor_0_name TEXT,
+    sensor_0_display_name TEXT,
+    sensor_0_param_id INT,
+    sensor_0_param_name TEXT,
+    sensor_0_param_units TEXT,
+    
+    sensor_1_id BIGINT,
+    sensor_1_name TEXT,
+    sensor_1_display_name TEXT,
+    sensor_1_param_id INT,
+    sensor_1_param_name TEXT,
+    sensor_1_param_units TEXT,
+
+    sensor_2_id BIGINT,
+    sensor_2_name TEXT,
+    sensor_2_display_name TEXT,
+    sensor_2_param_id INT,
+    sensor_2_param_name TEXT,
+    sensor_2_param_units TEXT,
+
+    sensor_3_id BIGINT,
+    sensor_3_name TEXT,
+    sensor_3_display_name TEXT,
+    sensor_3_param_id INT,
+    sensor_3_param_name TEXT,
+    sensor_3_param_units TEXT,
+
+    sensor_4_id BIGINT,
+    sensor_4_name TEXT,
+    sensor_4_display_name TEXT,
+    sensor_4_param_id INT,
+    sensor_4_param_name TEXT,
+    sensor_4_param_units TEXT,
+
+    sensor_5_id BIGINT,
+    sensor_5_name TEXT,
+    sensor_5_display_name TEXT,
+    sensor_5_param_id INT,
+    sensor_5_param_name TEXT,
+    sensor_5_param_units TEXT,
+
+    sensor_6_id BIGINT,
+    sensor_6_name TEXT,
+    sensor_6_display_name TEXT,
+    sensor_6_param_id INT,
+    sensor_6_param_name TEXT,
+    sensor_6_param_units TEXT,
+
+    sensor_7_id BIGINT,
+    sensor_7_name TEXT,
+    sensor_7_display_name TEXT,
+    sensor_7_param_id INT,
+    sensor_7_param_name TEXT,
+    sensor_7_param_units TEXT,
+
+    timezone TEXT,
+
+    -- Audit Columns
+    run_id INT,
+    ingestion_id INT,
+    updated_ingestion_id INT,
+    ingestion_datetime TIMESTAMP,
+    updated_ingestion_datetime TIMESTAMP,
+    source_system TEXT,
+
+    -- Constraints (optional)
+    PRIMARY KEY (location_id, ingestion_id)
+);
+
+
+import pandas as pd
+import duckdb
+import os
+from datetime import datetime
+import uuid
+import numpy as np
+
+csv_file = r"data\Raw\locations.csv"  
+df = pd.read_csv(csv_file)
+rename_map = {
+    "bounds[0]": "bounds_min_long",
+    "bounds[1]": "bounds_min_lat",
+    "bounds[2]": "bounds_max_long",
+    "bounds[3]": "bounds_max_lat",
+    "coordinates.latitude": "latitude",
+    "coordinates.longitude": "longitude",
+    "country.code": "country_code",
+    "country.id": "country_id",
+    "country.name": "country_name",
+    "datetimeFirst": "datetime_first",
+    "datetimeFirst.local": "datetime_first_local",
+    "datetimeFirst.utc": "datetime_first_utc",
+    "datetimeLast": "datetime_last",
+    "datetimeLast.local": "datetime_last_local",
+    "datetimeLast.utc": "datetime_last_utc",
+    "distance": "distance",
+    "id": "location_id",
+    "instruments[0].id": "instrument_0_id",
+    "instruments[0].name": "instrument_0_name",
+    "instruments[1].id": "instrument_1_id",
+    "instruments[1].name": "instrument_1_name",
+    "isMobile": "is_mobile",
+    "isMonitor": "is_monitor",
+    "licenses": "licenses",
+    "licenses[0].attribution.name": "license_attr_name",
+    "licenses[0].attribution.url": "license_attr_url",
+    "licenses[0].dateFrom": "license_date_from",
+    "licenses[0].dateTo": "license_date_to",
+    "licenses[0].id": "license_id",
+    "licenses[0].name": "license_name",
+    "locality": "locality",
+    "name": "location_name",
+    "owner.id": "owner_id",
+    "owner.name": "owner_name",
+    "provider.id": "provider_id",
+    "provider.name": "provider_name",
+    "timezone": "timezone",
+}
+for i in range(8):
+    rename_map.update({
+        f"sensors[{i}].id": f"sensor_{i}_id",
+        f"sensors[{i}].name": f"sensor_{i}_name",
+        f"sensors[{i}].parameter.displayName": f"sensor_{i}_display_name",
+        f"sensors[{i}].parameter.id": f"sensor_{i}_param_id",
+        f"sensors[{i}].parameter.name": f"sensor_{i}_param_name",
+        f"sensors[{i}].parameter.units": f"sensor_{i}_param_units",
+    })
+df = df.rename(columns=rename_map)
+df["license_date_from"] = pd.to_datetime(df["license_date_from"], errors='coerce', dayfirst=True).dt.date
+df["license_date_to"] = pd.to_datetime(df["license_date_to"], errors='coerce', dayfirst=True).dt.date
+df["datetime_first_local"] = pd.to_datetime(df["datetime_first_local"], errors='coerce')
+df["datetime_first_utc"] = pd.to_datetime(df["datetime_first_utc"], errors='coerce')
+df["datetime_last_local"] = pd.to_datetime(df["datetime_last_local"], errors='coerce')
+df["datetime_last_utc"] = pd.to_datetime(df["datetime_last_utc"], errors='coerce')
+df["run_id"] = np.arange(1, len(df) + 1)
+df["ingestion_id"] = 1
+df["updated_ingestion_id"] = 1
+df["ingestion_datetime"] = datetime.utcnow()
+df["updated_ingestion_datetime"] = datetime.utcnow()
+df["source_system"] = "openaq"
+con = duckdb.connect("mydb.duckdb")
+con.register("df_view", df)
+con.execute("INSERT INTO scr_locations SELECT * FROM df_view")
+print("✅ Data inserted into scr_locations successfully.")
+
+# import duckdb
+# import pandas as pd
+
+# con = duckdb.connect()
+# result = con.execute("SELECT * FROM dl_locations").fetchdf()
+
+# # If needed, show all rows/columns
+# pd.set_option("display.max_rows", None)
+# pd.set_option("display.max_columns", None)
+# print(result)
+
+# import duckdb
+
+# con = duckdb.connect("mydb.duckdb")  # Replace with your actual DB file if using one
+# tab = con.execute("SELECT table_schema, table_name FROM information_schema.tables").fetchdf()
+# tables = con.execute("SHOW TABLES").fetchall()
+# print(tables)
+# print(tab)

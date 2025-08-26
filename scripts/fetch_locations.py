@@ -55,8 +55,6 @@ with open(file_path_d1,'r') as file:
     data = json.load(file)
 dict_keys_lst = list(data.keys())
 results = data[dict_keys_lst[1]]
-print(type(results))
-print(len(results))
 res_results = results
 def flatten_json(res_results, parent_key='', sep='.'):
     """Recursively flatten JSON"""
